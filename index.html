@@ -1,0 +1,1121 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>圖書館尋寶大冒險</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #273238;
+        --muted: #66737a;
+        --paper: #fff8e8;
+        --panel: #ffffff;
+        --line: #dae3df;
+        --wood: #b77a4b;
+        --gold: #efbd55;
+        --green: #4f8b59;
+        --blue: #3c78a8;
+        --teal: #338f9f;
+        --rose: #c95d66;
+        --purple: #7460aa;
+        --shadow: 0 18px 42px rgba(39, 50, 56, 0.16);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--ink);
+        font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+        background: linear-gradient(180deg, #e7f3f3 0%, #fff7df 54%, #eee7dc 100%);
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      button {
+        min-height: 44px;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 900;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
+
+      .shell {
+        width: min(1180px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 22px 0 18px;
+      }
+
+      .hero {
+        position: relative;
+        min-height: 390px;
+        overflow: hidden;
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, #284f68 0%, #3f7f8d 48%, #c49b67 48% 100%);
+        box-shadow: var(--shadow);
+      }
+
+      .hero::before {
+        position: absolute;
+        inset: 0;
+        content: "";
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+        background-size: 44px 44px;
+        opacity: 0.45;
+      }
+
+      .hero-copy {
+        position: relative;
+        z-index: 2;
+        max-width: 620px;
+        padding: 42px;
+        color: #fffdf4;
+      }
+
+      .kicker,
+      .mini {
+        margin: 0 0 8px;
+        color: var(--blue);
+        font-size: 0.88rem;
+        font-weight: 900;
+      }
+
+      .hero .kicker {
+        color: #ffe08a;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 620px;
+        margin-bottom: 12px;
+        font-size: 4.35rem;
+        line-height: 1.02;
+        letter-spacing: 0;
+      }
+
+      .hero-copy p {
+        max-width: 500px;
+        font-size: 1.08rem;
+        font-weight: 800;
+        line-height: 1.75;
+      }
+
+      .hero-art {
+        position: absolute;
+        right: 32px;
+        bottom: 18px;
+        z-index: 1;
+        width: min(48%, 500px);
+        height: 292px;
+        pointer-events: none;
+      }
+
+      .shelf {
+        position: absolute;
+        left: 20px;
+        right: 20px;
+        bottom: 18px;
+        height: 160px;
+        border-radius: 8px;
+        background: #8f5e3b;
+        box-shadow: inset 0 -16px rgba(0, 0, 0, 0.14);
+      }
+
+      .shelf::before,
+      .shelf::after {
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        height: 12px;
+        border-radius: 8px;
+        content: "";
+        background: #6e472f;
+      }
+
+      .shelf::before {
+        top: 68px;
+      }
+
+      .shelf::after {
+        bottom: 22px;
+      }
+
+      .book {
+        position: absolute;
+        bottom: 48px;
+        width: 32px;
+        height: 104px;
+        border-radius: 5px;
+        background: var(--blue);
+        box-shadow: inset -6px 0 rgba(0, 0, 0, 0.12);
+      }
+
+      .book.a { left: 52px; background: var(--rose); height: 118px; }
+      .book.b { left: 90px; background: var(--gold); height: 96px; }
+      .book.c { left: 128px; background: var(--green); height: 112px; }
+      .book.d { left: 186px; background: var(--purple); height: 106px; }
+      .book.e { left: 224px; background: var(--teal); height: 122px; }
+
+      .beetle {
+        position: absolute;
+        right: 96px;
+        bottom: 82px;
+        width: 88px;
+        height: 68px;
+        border-radius: 50%;
+        background: #2e3a34;
+        box-shadow: inset -12px -10px rgba(0, 0, 0, 0.2);
+      }
+
+      .beetle::before,
+      .beetle::after {
+        position: absolute;
+        top: -18px;
+        width: 44px;
+        height: 40px;
+        border-top: 6px solid #2e3a34;
+        content: "";
+      }
+
+      .beetle::before {
+        left: -20px;
+        border-left: 6px solid #2e3a34;
+        border-radius: 50% 0 0;
+        transform: rotate(-20deg);
+      }
+
+      .beetle::after {
+        right: -20px;
+        border-right: 6px solid #2e3a34;
+        border-radius: 0 50% 0 0;
+        transform: rotate(20deg);
+      }
+
+      .pingpong {
+        position: absolute;
+        right: 34px;
+        bottom: 42px;
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        background: #f7f2df;
+        box-shadow: inset -7px -9px rgba(0, 0, 0, 0.1);
+      }
+
+      .paddle {
+        position: absolute;
+        right: 72px;
+        bottom: 24px;
+        width: 62px;
+        height: 78px;
+        border-radius: 50% 50% 42% 42%;
+        background: #c95d66;
+        transform: rotate(-28deg);
+      }
+
+      .paddle::after {
+        position: absolute;
+        left: 20px;
+        bottom: -48px;
+        width: 20px;
+        height: 62px;
+        border-radius: 10px;
+        content: "";
+        background: #8a5a38;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 310px minmax(0, 1fr);
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .map,
+      .panel {
+        border: 2px solid rgba(39, 50, 56, 0.08);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .map {
+        padding: 18px;
+      }
+
+      .map h2 {
+        margin-bottom: 6px;
+        font-size: 1.35rem;
+      }
+
+      .map p {
+        color: var(--muted);
+        font-weight: 800;
+        line-height: 1.55;
+      }
+
+      .trail {
+        display: grid;
+        gap: 9px;
+        margin-top: 16px;
+      }
+
+      .stage-tab {
+        display: grid;
+        grid-template-columns: 38px 1fr auto;
+        align-items: center;
+        gap: 10px;
+        min-height: 56px;
+        padding: 8px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+        color: var(--ink);
+        text-align: left;
+      }
+
+      .stage-tab.is-active {
+        border-color: var(--blue);
+        background: #e8f4fa;
+      }
+
+      .stage-tab.is-done {
+        border-color: rgba(79, 139, 89, 0.45);
+        background: #edf7ef;
+      }
+
+      .badge-icon {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        color: #fff;
+        background: var(--blue);
+        font-weight: 900;
+      }
+
+      .stage-tab small {
+        display: block;
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      .checkmark {
+        color: var(--green);
+        font-weight: 900;
+      }
+
+      .panel {
+        min-height: 620px;
+        padding: 24px;
+      }
+
+      .panel-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+
+      .panel-head h2 {
+        margin-bottom: 4px;
+        font-size: 1.75rem;
+      }
+
+      .score {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(74px, 1fr));
+        gap: 8px;
+      }
+
+      .score-card {
+        min-height: 66px;
+        padding: 8px;
+        border-radius: 8px;
+        background: #f3f0e7;
+        text-align: center;
+      }
+
+      .score-card strong {
+        display: block;
+        font-size: 1.42rem;
+        line-height: 1.1;
+      }
+
+      .score-card span {
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 900;
+      }
+
+      .prompt {
+        min-height: 94px;
+        padding: 16px;
+        border: 2px dashed #c8d9df;
+        border-radius: 8px;
+        background: #f8fbfb;
+      }
+
+      .prompt p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-weight: 800;
+        line-height: 1.7;
+      }
+
+      .work {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .match-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .match-row,
+      .card,
+      .chip {
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+      }
+
+      .match-row {
+        display: grid;
+        grid-template-columns: 1fr minmax(150px, 260px);
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      select,
+      input,
+      textarea {
+        width: 100%;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      select,
+      input {
+        min-height: 40px;
+        padding: 0 10px;
+      }
+
+      textarea {
+        min-height: 126px;
+        padding: 10px;
+        resize: vertical;
+        line-height: 1.65;
+      }
+
+      .choice-grid,
+      .chip-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
+      }
+
+      .choice,
+      .chip {
+        min-height: 54px;
+        padding: 10px 12px;
+        color: var(--ink);
+        background: #fffdf7;
+        text-align: left;
+      }
+
+      .choice[aria-pressed="true"],
+      .chip.selected {
+        border-color: var(--blue);
+        background: #e8f4fa;
+      }
+
+      .choice.good,
+      .chip.good {
+        border-color: var(--green);
+        background: #e9f5ea;
+      }
+
+      .choice.bad,
+      .chip.bad {
+        border-color: var(--rose);
+        background: #fff0ec;
+      }
+
+      .keyword-group {
+        display: grid;
+        gap: 10px;
+        padding: 12px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: #f8fbfb;
+      }
+
+      .keyword-text {
+        padding: 12px;
+        border-radius: 8px;
+        background: #fffdf7;
+        font-weight: 900;
+        line-height: 1.7;
+      }
+
+      .sentence-card {
+        display: grid;
+        gap: 10px;
+        padding: 12px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+      }
+
+      .sentence-grid,
+      .diary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .diary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .feedback {
+        min-height: 56px;
+        margin-top: 16px;
+        padding: 12px 14px;
+        border-radius: 8px;
+        background: #f4f0e8;
+        color: var(--muted);
+        font-weight: 800;
+        line-height: 1.6;
+      }
+
+      .feedback.good {
+        color: #2c6d45;
+        background: #e8f4ea;
+      }
+
+      .feedback.try {
+        color: #8a5137;
+        background: #fff0e8;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+
+      .primary {
+        padding: 0 18px;
+        color: #fff;
+        background: var(--green);
+      }
+
+      .secondary {
+        padding: 0 18px;
+        color: var(--ink);
+        background: #e8eef0;
+      }
+
+      .gold {
+        color: #3a2c16;
+        background: var(--gold);
+      }
+
+      .site-credit {
+        margin: 14px 0 0;
+        color: rgba(39, 50, 56, 0.72);
+        font-size: 0.86rem;
+        font-weight: 800;
+        line-height: 1.55;
+        letter-spacing: 0;
+        text-align: center;
+      }
+
+      .site-credit p {
+        margin: 4px 0;
+      }
+
+      @media (max-width: 900px) {
+        .shell {
+          width: min(100% - 18px, 680px);
+          padding-top: 10px;
+        }
+
+        .hero {
+          min-height: 550px;
+        }
+
+        .hero-copy {
+          padding: 30px 24px;
+        }
+
+        h1 {
+          max-width: 330px;
+          font-size: 2.55rem;
+          line-height: 1.1;
+        }
+
+        .hero-copy p {
+          max-width: 330px;
+        }
+
+        .hero-art {
+          left: 8px;
+          right: 8px;
+          bottom: 16px;
+          width: auto;
+          height: 250px;
+        }
+
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .panel {
+          min-height: auto;
+          padding: 18px;
+        }
+
+        .panel-head {
+          display: grid;
+        }
+
+        .match-row,
+        .sentence-grid,
+        .diary-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        h1 {
+          max-width: 280px;
+          font-size: 2.18rem;
+        }
+
+        .score {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .choice-grid,
+        .chip-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .book.e {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <section class="hero" aria-labelledby="gameTitle">
+        <div class="hero-copy">
+          <p class="kicker">國小二下國語第十一課延伸</p>
+          <h1 id="gameTitle">圖書館尋寶大冒險</h1>
+          <p>進入圖書館大寶庫，破解日記、書名號、食部字、不但而且句型與桌球日記任務。</p>
+          <button id="startBtn" class="primary gold" type="button">開始尋寶</button>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <span class="shelf"></span>
+          <span class="book a"></span>
+          <span class="book b"></span>
+          <span class="book c"></span>
+          <span class="book d"></span>
+          <span class="book e"></span>
+          <span class="beetle"></span>
+          <span class="paddle"></span>
+          <span class="pingpong"></span>
+        </div>
+      </section>
+
+      <section id="gameArea" class="layout" hidden>
+        <aside class="map" aria-label="圖書館尋寶地圖">
+          <h2>圖書館大寶庫</h2>
+          <p>完成八個關卡，成為最厲害的小讀者。</p>
+          <div id="trail" class="trail"></div>
+        </aside>
+
+        <main class="panel">
+          <div class="panel-head">
+            <div>
+              <p id="levelKicker" class="mini">關卡</p>
+              <h2 id="levelTitle"></h2>
+            </div>
+            <div class="score" aria-label="遊戲狀態">
+              <div class="score-card"><strong id="scoreText">0</strong><span>知識星</span></div>
+              <div class="score-card"><strong id="doneText">0/8</strong><span>寶物</span></div>
+              <div class="score-card"><strong id="noteText">0</strong><span>日記力</span></div>
+            </div>
+          </div>
+
+          <section class="prompt">
+            <h3 id="promptTitle"></h3>
+            <p id="promptText"></p>
+          </section>
+
+          <section id="work" class="work"></section>
+          <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+
+          <div class="actions">
+            <button id="hintBtn" class="secondary" type="button">提示</button>
+            <button id="checkBtn" class="secondary" type="button">檢查答案</button>
+            <button id="nextBtn" class="primary" type="button" disabled>下一關</button>
+          </div>
+        </main>
+      </section>
+
+      <section id="finishPanel" class="panel" hidden>
+        <p class="mini">尋寶完成</p>
+        <h2>小讀者徽章到手了</h2>
+        <p id="finishText"></p>
+        <div class="actions">
+          <button id="restartBtn" class="primary" type="button">再玩一次</button>
+        </div>
+      </section>
+
+      <footer class="site-credit">
+        <p>練習內容依據：國小二年級下學期康軒版國語第十一課〈小讀者樂園〉</p>
+        <p>Interactive design by chaohuang-TW</p>
+        <p>非官方學習練習頁面</p>
+      </footer>
+    </div>
+
+    <script>
+      const levels = [
+        {
+          id: "memory",
+          icon: "讀",
+          title: "記憶放大鏡",
+          kicker: "關卡一｜課文理解快問快答",
+          promptTitle: "回答日記的人、事、時、地、物",
+          promptText: "根據〈小讀者樂園〉日記內容，回答三個問題才能進入圖書館大門。",
+          hint: "五月九日星期日天氣雨；和哥哥去；主題是甲蟲大力士，借《甲蟲王》。",
+          type: "quiz",
+          rows: [
+            { question: "這篇日記是在什麼時候、天氣如何？", answer: "五月九日星期日，天氣雨", options: ["五月九日星期日，天氣雨", "五月二十九日星期三，天氣晴", "六月九日星期日，天氣晴"] },
+            { question: "主角和誰一起去圖書館？", answer: "哥哥", options: ["哥哥", "同學", "奶奶"] },
+            { question: "活動主題和借回家的書是什麼？", answer: "甲蟲大力士；《甲蟲王》", options: ["甲蟲大力士；《甲蟲王》", "小人國冒險記；《長腿叔叔》", "與作家有約；《昆蟲記》"] }
+          ]
+        },
+        {
+          id: "bookmark",
+          icon: "名",
+          title: "標點符號魔法師",
+          kicker: "關卡二｜認識書名號",
+          promptTitle: "找出需要畫書名號的書名",
+          promptText: "書名號標在書名左旁。請從句子中挑出真正的書名。",
+          hint: "甲蟲王、長腿叔叔都是書名。",
+          type: "chips",
+          groups: [
+            { label: "我借了甲蟲王這本書回家。", answers: ["甲蟲王"], options: ["我", "甲蟲王", "這本書", "回家"] },
+            { label: "今天，我們這組要分享長腿叔叔的讀後心得。", answers: ["長腿叔叔"], options: ["今天", "我們這組", "長腿叔叔", "讀後心得"] }
+          ]
+        },
+        {
+          id: "food",
+          icon: "食",
+          title: "食神路口大挑戰",
+          kicker: "關卡三｜食部字族辨識",
+          promptTitle: "從菜單中找出食部的字",
+          promptText: "食部常和食物或吃的動作有關。請挑出食部字。",
+          hint: "館、飯、飽、餅都帶有食部意義。",
+          type: "chips",
+          groups: [
+            { label: "字庫大混戰", answers: ["館", "飯", "飽", "餅"], options: ["館", "蟲", "飯", "講", "飽", "奧", "餅"] }
+          ]
+        },
+        {
+          id: "sentence",
+          icon: "句",
+          title: "造句接力賽",
+          kicker: "關卡四｜不但而且句型",
+          promptTitle: "把兩句話接成遞進句",
+          promptText: "用「不但……而且……」把前後句連起來，後句是更想強調的部分。",
+          hint: "前句放在不但後面，後句放在而且後面。",
+          type: "sentence",
+          rows: [
+            { before: "主講人教我們認識各種不同的甲蟲。", after: "說明了甲蟲的一生。", answer: "主講人不但教我們認識各種不同的甲蟲，而且說明了甲蟲的一生。", options: ["主講人不但教我們認識各種不同的甲蟲，而且說明了甲蟲的一生。", "主講人而且教我們認識甲蟲，不但說明一生。", "甲蟲不但認識主講人，而且說明圖書館。"] },
+            { before: "打籃球可以幫助長高。", after: "能使心情變好。", answer: "打籃球不但可以幫助長高，而且還能使心情變好。", options: ["打籃球不但可以幫助長高，而且還能使心情變好。", "打籃球不但天氣雨，而且甲蟲王。", "心情不但打籃球，而且長高可以。"] }
+          ]
+        },
+        {
+          id: "poster",
+          icon: "報",
+          title: "圖書館活動報報",
+          kicker: "關卡五｜細節配對",
+          promptTitle: "把活動海報拼回去",
+          promptText: "請把活動名稱和對應時間或內容配對。",
+          hint: "甲蟲大力士是這次主題；與作家有約是下星期；小人國冒險記是下個月。",
+          type: "match",
+          rows: [
+            { left: "甲蟲大力士", answer: "認識甲蟲的外形與一生", options: ["下個月的主題", "認識甲蟲的外形與一生", "下個星期的活動"] },
+            { left: "與作家有約", answer: "下個星期的活動", options: ["下個星期的活動", "下個月的主題", "認識甲蟲的外形與一生"] },
+            { left: "小人國冒險記", answer: "下個月的主題", options: ["認識甲蟲的外形與一生", "下個星期的活動", "下個月的主題"] }
+          ]
+        },
+        {
+          id: "parts",
+          icon: "字",
+          title: "生字變形金剛",
+          kicker: "關卡六｜字體結構組合",
+          promptTitle: "組合部件打開密碼門",
+          promptText: "請把左邊零件和右邊零件組合成第十一課生字。",
+          hint: "广加車是庫，糸加勺是約，大加奥是奧，三個虫是蟲。",
+          type: "match",
+          rows: [
+            { left: "广 + 車", answer: "庫", options: ["庫", "約", "奧", "蟲"] },
+            { left: "糸 + 勺", answer: "約", options: ["庫", "約", "奧", "蟲"] },
+            { left: "大 + 奥", answer: "奧", options: ["庫", "約", "奧", "蟲"] },
+            { left: "虫 + 虫 + 虫", answer: "蟲", options: ["庫", "約", "奧", "蟲"] }
+          ]
+        },
+        {
+          id: "diary",
+          icon: "記",
+          title: "日記解剖學",
+          kicker: "關卡七｜認識日記結構",
+          promptTitle: "配對日記的四個祕密武器",
+          promptText: "寫日記需要日期天氣、主角、經過，以及心情反省。",
+          hint: "日期天氣是開頭；主角是人物；經過是事件；心情反省是想法。",
+          type: "match",
+          rows: [
+            { left: "日期和天氣", answer: "五月二十九日 星期三 天氣晴。", options: ["我覺得這場球賽雖然沒有分出高下，但我也要利用時間多鍛鍊身體。", "五月二十九日 星期三 天氣晴。", "我和同學。", "我們分成兩組進行大對決，無論是接球、投球都像閃電一樣。"] },
+            { left: "日記主角", answer: "我和同學。", options: ["五月二十九日 星期三 天氣晴。", "我和同學。", "我們分成兩組進行大對決，無論是接球、投球都像閃電一樣。", "我覺得這場球賽雖然沒有分出高下，但我也要利用時間多鍛鍊身體。"] },
+            { left: "印象深刻的事", answer: "我們分成兩組進行大對決，無論是接球、投球都像閃電一樣。", options: ["我和同學。", "我們分成兩組進行大對決，無論是接球、投球都像閃電一樣。", "五月二十九日 星期三 天氣晴。", "我覺得這場球賽雖然沒有分出高下，但我也要利用時間多鍛鍊身體。"] },
+            { left: "自己的心情及反省", answer: "我覺得這場球賽雖然沒有分出高下，但我也要利用時間多鍛鍊身體。", options: ["我們分成兩組進行大對決，無論是接球、投球都像閃電一樣。", "五月二十九日 星期三 天氣晴。", "我和同學。", "我覺得這場球賽雖然沒有分出高下，但我也要利用時間多鍛鍊身體。"] }
+          ]
+        },
+        {
+          id: "write",
+          icon: "桌",
+          title: "我的桌球對決日記",
+          kicker: "關卡八｜進階寫作挑戰",
+          promptTitle: "完成專屬桌球日記",
+          promptText: "綜合日期、天氣、主角、經過、心情反省，並使用「不但……而且……」。",
+          hint: "至少要寫日期天氣、人物、比賽經過、心情反省，並出現不但和而且。",
+          type: "writing"
+        }
+      ];
+
+      const state = {
+        index: 0,
+        score: 0,
+        diary: 0,
+        done: new Set()
+      };
+
+      const els = {
+        startBtn: document.querySelector("#startBtn"),
+        restartBtn: document.querySelector("#restartBtn"),
+        gameArea: document.querySelector("#gameArea"),
+        finishPanel: document.querySelector("#finishPanel"),
+        trail: document.querySelector("#trail"),
+        levelKicker: document.querySelector("#levelKicker"),
+        levelTitle: document.querySelector("#levelTitle"),
+        promptTitle: document.querySelector("#promptTitle"),
+        promptText: document.querySelector("#promptText"),
+        work: document.querySelector("#work"),
+        feedback: document.querySelector("#feedback"),
+        hintBtn: document.querySelector("#hintBtn"),
+        checkBtn: document.querySelector("#checkBtn"),
+        nextBtn: document.querySelector("#nextBtn"),
+        scoreText: document.querySelector("#scoreText"),
+        doneText: document.querySelector("#doneText"),
+        noteText: document.querySelector("#noteText"),
+        finishText: document.querySelector("#finishText")
+      };
+
+      els.startBtn.addEventListener("click", () => {
+        document.querySelector(".hero").hidden = true;
+        els.finishPanel.hidden = true;
+        els.gameArea.hidden = false;
+        renderLevel(0);
+      });
+      els.restartBtn.addEventListener("click", resetGame);
+      els.hintBtn.addEventListener("click", () => setFeedback(levels[state.index].hint, ""));
+      els.checkBtn.addEventListener("click", checkAnswer);
+      els.nextBtn.addEventListener("click", nextLevel);
+
+      function renderLevel(index) {
+        state.index = index;
+        const level = levels[index];
+        els.levelKicker.textContent = level.kicker;
+        els.levelTitle.textContent = level.title;
+        els.promptTitle.textContent = level.promptTitle;
+        els.promptText.textContent = level.promptText;
+        els.nextBtn.disabled = true;
+        els.checkBtn.disabled = false;
+        setFeedback("完成任務後，圖書館寶物會亮起來。", "");
+        renderTrail();
+        renderScore();
+        els.work.innerHTML = "";
+        if (level.type === "quiz") renderQuiz(level);
+        if (level.type === "chips") renderChips(level);
+        if (level.type === "sentence") renderSentence(level);
+        if (level.type === "match") renderMatch(level);
+        if (level.type === "writing") renderWriting();
+      }
+
+      function renderTrail() {
+        els.trail.innerHTML = "";
+        levels.forEach((level, index) => {
+          const button = document.createElement("button");
+          button.className = "stage-tab";
+          if (index === state.index) button.classList.add("is-active");
+          if (state.done.has(level.id)) button.classList.add("is-done");
+          button.type = "button";
+          button.innerHTML = `<span class="badge-icon">${level.icon}</span><span>${level.title}<small>${level.kicker.split("｜")[1]}</small></span><span class="checkmark">${state.done.has(level.id) ? "✓" : ""}</span>`;
+          button.addEventListener("click", () => renderLevel(index));
+          els.trail.appendChild(button);
+        });
+      }
+
+      function renderScore() {
+        els.scoreText.textContent = state.score;
+        els.doneText.textContent = `${state.done.size}/8`;
+        els.noteText.textContent = state.diary;
+      }
+
+      function renderQuiz(level) {
+        const list = document.createElement("div");
+        list.className = "work";
+        level.rows.forEach((row, rowIndex) => {
+          const block = document.createElement("div");
+          block.className = "keyword-group";
+          block.innerHTML = `<strong>${rowIndex + 1}. ${row.question}</strong>`;
+          const grid = document.createElement("div");
+          grid.className = "choice-grid";
+          row.options.forEach((option) => {
+            const button = choiceButton(option, rowIndex);
+            grid.appendChild(button);
+          });
+          block.appendChild(grid);
+          list.appendChild(block);
+        });
+        els.work.appendChild(list);
+      }
+
+      function renderChips(level) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "work";
+        level.groups.forEach((group, groupIndex) => {
+          const block = document.createElement("div");
+          block.className = "keyword-group";
+          block.innerHTML = `<strong>${group.label}</strong>`;
+          const chips = document.createElement("div");
+          chips.className = "chip-grid";
+          group.options.forEach((option) => {
+            const chip = document.createElement("button");
+            chip.className = "chip";
+            chip.type = "button";
+            chip.textContent = option;
+            chip.dataset.group = groupIndex;
+            chip.dataset.value = option;
+            chip.setAttribute("aria-pressed", "false");
+            chip.addEventListener("click", () => {
+              chip.classList.toggle("selected");
+              chip.setAttribute("aria-pressed", chip.classList.contains("selected") ? "true" : "false");
+            });
+            chips.appendChild(chip);
+          });
+          block.appendChild(chips);
+          wrapper.appendChild(block);
+        });
+        els.work.appendChild(wrapper);
+      }
+
+      function renderSentence(level) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "work";
+        level.rows.forEach((row, index) => {
+          const block = document.createElement("div");
+          block.className = "sentence-card";
+          block.innerHTML = `<strong>前句：${row.before}</strong><strong>後句：${row.after}</strong>`;
+          block.appendChild(selectFor(row.options, index));
+          wrapper.appendChild(block);
+        });
+        els.work.appendChild(wrapper);
+      }
+
+      function renderMatch(level) {
+        const list = document.createElement("div");
+        list.className = "match-list";
+        level.rows.forEach((row, index) => {
+          const item = document.createElement("label");
+          item.className = "match-row";
+          item.innerHTML = `<strong>${row.left}</strong>`;
+          item.appendChild(selectFor(row.options, index));
+          list.appendChild(item);
+        });
+        els.work.appendChild(list);
+      }
+
+      function renderWriting() {
+        const box = document.createElement("div");
+        box.className = "work";
+        box.innerHTML = `
+          <div class="keyword-text">草稿：月____日 星期____ 天氣____。今天，我和____一起去打桌球。對手不但發球速度很快，而且____。最後，我的心情覺得____，我希望下次可以____。</div>
+          <div class="diary-grid">
+            <label class="card" style="padding:12px"><strong>日期與天氣</strong><input id="dateWeather" placeholder="例：六月二日 星期二 天氣晴"></label>
+            <label class="card" style="padding:12px"><strong>主角</strong><input id="diaryWho" placeholder="例：我和哥哥"></label>
+            <label class="card" style="padding:12px"><strong>心情反省</strong><input id="diaryMood" placeholder="例：下次要多練習接球"></label>
+          </div>
+          <label class="card" style="padding:12px">
+            <strong>桌球日記全文</strong>
+            <textarea id="diaryText" placeholder="請寫出完整桌球日記，記得使用「不但……而且……」。"></textarea>
+          </label>
+        `;
+        els.work.appendChild(box);
+      }
+
+      function choiceButton(option, rowIndex) {
+        const button = document.createElement("button");
+        button.className = "choice";
+        button.type = "button";
+        button.textContent = option;
+        button.dataset.row = rowIndex;
+        button.dataset.value = option;
+        button.setAttribute("aria-pressed", "false");
+        button.addEventListener("click", () => selectChoice(button));
+        return button;
+      }
+
+      function selectChoice(button) {
+        els.work.querySelectorAll(`[data-row="${button.dataset.row}"]`).forEach((item) => {
+          item.setAttribute("aria-pressed", "false");
+          item.classList.remove("selected");
+        });
+        button.setAttribute("aria-pressed", "true");
+        button.classList.add("selected");
+      }
+
+      function selectFor(options, index) {
+        const select = document.createElement("select");
+        select.dataset.index = index;
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "請選擇";
+        select.appendChild(placeholder);
+        options.forEach((option) => {
+          const item = document.createElement("option");
+          item.value = option;
+          item.textContent = option;
+          select.appendChild(item);
+        });
+        return select;
+      }
+
+      function checkAnswer() {
+        const level = levels[state.index];
+        let correct = false;
+        if (level.type === "quiz") {
+          correct = level.rows.every((row, rowIndex) => {
+            const selected = els.work.querySelector(`[data-row="${rowIndex}"][aria-pressed="true"]`);
+            return selected && selected.dataset.value === row.answer;
+          });
+        }
+        if (level.type === "chips") {
+          correct = level.groups.every((group, groupIndex) => {
+            const selected = [...els.work.querySelectorAll(`[data-group="${groupIndex}"].selected`)].map((item) => item.dataset.value).sort();
+            return selected.join("|") === group.answers.slice().sort().join("|");
+          });
+        }
+        if (["sentence", "match"].includes(level.type)) {
+          const selects = [...els.work.querySelectorAll("select")];
+          correct = selects.every((select, index) => select.value === level.rows[index].answer);
+        }
+        if (level.type === "writing") {
+          const date = document.querySelector("#dateWeather").value.trim();
+          const who = document.querySelector("#diaryWho").value.trim();
+          const mood = document.querySelector("#diaryMood").value.trim();
+          const text = document.querySelector("#diaryText").value.trim();
+          correct = date.length >= 6 && who.length >= 2 && mood.length >= 4 && text.length >= 28 && text.includes("不但") && text.includes("而且");
+        }
+        if (correct) completeLevel(level);
+        else setFeedback(level.type === "writing" ? "請把日期天氣、主角、心情反省都填好，全文也要包含「不但」和「而且」。" : "還差一點，再看看提示或重新調整答案。", "try");
+      }
+
+      function completeLevel(level) {
+        if (!state.done.has(level.id)) {
+          state.done.add(level.id);
+          state.score += 10;
+          state.diary += 1;
+        }
+        setFeedback("答對了！你找到一件圖書館寶物。", "good");
+        els.nextBtn.disabled = false;
+        els.checkBtn.disabled = true;
+        renderTrail();
+        renderScore();
+      }
+
+      function nextLevel() {
+        const next = levels.findIndex((level) => !state.done.has(level.id));
+        if (next === -1) {
+          finishGame();
+          return;
+        }
+        renderLevel(next);
+      }
+
+      function finishGame() {
+        els.gameArea.hidden = true;
+        els.finishPanel.hidden = false;
+        els.finishText.textContent = `你完成了 ${state.done.size} 個圖書館任務，取得 ${state.score} 顆知識星，累積 ${state.diary} 點日記力。現在你是最厲害的小讀者！`;
+      }
+
+      function resetGame() {
+        state.index = 0;
+        state.score = 0;
+        state.diary = 0;
+        state.done = new Set();
+        document.querySelector(".hero").hidden = false;
+        els.gameArea.hidden = true;
+        els.finishPanel.hidden = true;
+        renderScore();
+      }
+
+      function setFeedback(message, type) {
+        els.feedback.textContent = message;
+        els.feedback.className = `feedback ${type || ""}`.trim();
+      }
+    </script>
+  </body>
+</html>
