@@ -437,6 +437,27 @@
         background: #f8fbfb;
       }
 
+      .level-visual {
+        min-height: 178px;
+        margin-bottom: 14px;
+        overflow: hidden;
+        border: 2px solid rgba(39, 50, 56, 0.08);
+        border-radius: 8px;
+        background: linear-gradient(135deg, #e8f4fa, #fff8e8);
+      }
+
+      .level-visual svg {
+        display: block;
+        width: 100%;
+        height: 178px;
+      }
+
+      .level-visual text {
+        font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+        font-weight: 900;
+        letter-spacing: 0;
+      }
+
       .prompt p {
         margin-bottom: 0;
         color: var(--muted);
@@ -668,9 +689,20 @@
           grid-template-columns: 1fr;
         }
 
+        .map {
+          order: 2;
+        }
+
         .panel {
+          order: 1;
           min-height: auto;
           padding: 18px;
+        }
+
+        .level-visual,
+        .level-visual svg {
+          min-height: 150px;
+          height: 150px;
         }
 
         .panel-head {
@@ -758,6 +790,8 @@
               <div class="score-card"><strong id="noteText">0</strong><span>日記力</span></div>
             </div>
           </div>
+
+          <section id="levelVisual" class="level-visual" aria-hidden="true"></section>
 
           <section class="prompt">
             <h3 id="promptTitle"></h3>
@@ -923,6 +957,7 @@
         trail: document.querySelector("#trail"),
         levelKicker: document.querySelector("#levelKicker"),
         levelTitle: document.querySelector("#levelTitle"),
+        levelVisual: document.querySelector("#levelVisual"),
         promptTitle: document.querySelector("#promptTitle"),
         promptText: document.querySelector("#promptText"),
         work: document.querySelector("#work"),
@@ -959,6 +994,7 @@
         setFeedback("完成任務後，圖書館寶物會亮起來。", "");
         renderTrail();
         renderScore();
+        renderLevelVisual(level);
         els.work.innerHTML = "";
         if (level.type === "quiz") renderQuiz(level);
         if (level.type === "chips") renderChips(level);
@@ -985,6 +1021,93 @@
         els.scoreText.textContent = state.score;
         els.doneText.textContent = `${state.done.size}/8`;
         els.noteText.textContent = state.diary;
+      }
+
+      function renderLevelVisual(level) {
+        const palette = {
+          memory: ["#3c78a8", "#efbd55", "#fff8e8"],
+          bookmark: ["#c95d66", "#7460aa", "#fff8e8"],
+          food: ["#4f8b59", "#efbd55", "#fff8e8"],
+          sentence: ["#338f9f", "#c95d66", "#fff8e8"],
+          poster: ["#7460aa", "#efbd55", "#fff8e8"],
+          parts: ["#b77a4b", "#3c78a8", "#fff8e8"],
+          diary: ["#3c78a8", "#4f8b59", "#fff8e8"],
+          write: ["#c95d66", "#3c78a8", "#fff8e8"]
+        }[level.id] || ["#3c78a8", "#efbd55", "#fff8e8"];
+        const [main, accent, paper] = palette;
+        const scenes = {
+          memory: `
+            <circle cx="570" cy="86" r="42" fill="${accent}" opacity=".24"/>
+            <rect x="52" y="40" width="190" height="112" rx="10" fill="${paper}" stroke="${main}" stroke-width="5"/>
+            <path d="M76 72h120M76 100h148M76 128h84" stroke="${main}" stroke-width="10" stroke-linecap="round" opacity=".32"/>
+            <circle cx="350" cy="82" r="48" fill="none" stroke="${accent}" stroke-width="14"/>
+            <path d="M386 118l62 48" stroke="${accent}" stroke-width="18" stroke-linecap="round"/>
+            <text x="502" y="102" fill="${main}" font-size="34">找線索</text>`,
+          bookmark: `
+            <rect x="70" y="34" width="150" height="126" rx="10" fill="${paper}" stroke="${main}" stroke-width="5"/>
+            <rect x="236" y="34" width="150" height="126" rx="10" fill="${paper}" stroke="${accent}" stroke-width="5"/>
+            <path d="M98 62h86M98 92h76M98 122h96M264 62h86M264 92h76M264 122h96" stroke="#7c8a8f" stroke-width="8" stroke-linecap="round" opacity=".34"/>
+            <path d="M124 48v108M290 48v108" stroke="${main}" stroke-width="8" stroke-linecap="round"/>
+            <text x="455" y="104" fill="${main}" font-size="34">書名號</text>`,
+          food: `
+            <circle cx="142" cy="94" r="70" fill="${paper}" stroke="${main}" stroke-width="6"/>
+            <circle cx="142" cy="94" r="38" fill="${accent}" opacity=".45"/>
+            <path d="M278 40v118M304 40v118M278 92h26" stroke="${main}" stroke-width="10" stroke-linecap="round"/>
+            <rect x="378" y="52" width="122" height="88" rx="12" fill="${paper}" stroke="${accent}" stroke-width="5"/>
+            <text x="405" y="107" fill="${main}" font-size="38">食</text>
+            <text x="512" y="107" fill="${main}" font-size="30">館 飯 飽 餅</text>`,
+          sentence: `
+            <rect x="54" y="50" width="180" height="88" rx="14" fill="${paper}" stroke="${main}" stroke-width="5"/>
+            <rect x="416" y="50" width="180" height="88" rx="14" fill="${paper}" stroke="${accent}" stroke-width="5"/>
+            <path d="M238 94 C286 44 364 44 412 94" fill="none" stroke="${accent}" stroke-width="16" stroke-linecap="round"/>
+            <text x="96" y="105" fill="${main}" font-size="30">不但</text>
+            <text x="452" y="105" fill="${main}" font-size="30">而且</text>
+            <circle cx="326" cy="72" r="18" fill="${main}"/>
+            <circle cx="326" cy="120" r="18" fill="${accent}"/>`,
+          poster: `
+            <rect x="84" y="28" width="190" height="138" rx="12" fill="${paper}" stroke="${main}" stroke-width="6"/>
+            <rect x="310" y="42" width="178" height="112" rx="10" fill="#fff" stroke="${accent}" stroke-width="5"/>
+            <path d="M118 62h132M118 94h94M118 126h118M342 76h118M342 108h88" stroke="#7c8a8f" stroke-width="8" stroke-linecap="round" opacity=".35"/>
+            <circle cx="528" cy="84" r="34" fill="${accent}" opacity=".7"/>
+            <text x="502" y="142" fill="${main}" font-size="28">活動報</text>`,
+          parts: `
+            <rect x="58" y="52" width="118" height="90" rx="12" fill="${paper}" stroke="${main}" stroke-width="5"/>
+            <rect x="224" y="52" width="118" height="90" rx="12" fill="${paper}" stroke="${accent}" stroke-width="5"/>
+            <path d="M178 96h42" stroke="${main}" stroke-width="10" stroke-linecap="round"/>
+            <path d="M346 96h54" stroke="${main}" stroke-width="10" stroke-linecap="round"/>
+            <rect x="406" y="38" width="142" height="118" rx="14" fill="${accent}" opacity=".28" stroke="${main}" stroke-width="5"/>
+            <text x="90" y="109" fill="${main}" font-size="34">广</text>
+            <text x="260" y="109" fill="${accent}" font-size="34">車</text>
+            <text x="444" y="112" fill="${main}" font-size="42">庫</text>`,
+          diary: `
+            <rect x="78" y="34" width="210" height="132" rx="14" fill="${paper}" stroke="${main}" stroke-width="5"/>
+            <path d="M126 34v132" stroke="${main}" stroke-width="5" opacity=".45"/>
+            <path d="M156 68h154M156 100h132M156 132h106" stroke="#7c8a8f" stroke-width="8" stroke-linecap="round" opacity=".34"/>
+            <rect x="360" y="48" width="136" height="42" rx="8" fill="${accent}" opacity=".75"/>
+            <rect x="360" y="108" width="136" height="42" rx="8" fill="${main}" opacity=".75"/>
+            <text x="388" y="79" fill="#fff" font-size="22">日期</text>
+            <text x="388" y="139" fill="#fff" font-size="22">心情</text>`,
+          write: `
+            <rect x="68" y="42" width="210" height="128" rx="14" fill="${paper}" stroke="${main}" stroke-width="5"/>
+            <path d="M108 76h138M108 108h118M108 140h152" stroke="#7c8a8f" stroke-width="8" stroke-linecap="round" opacity=".34"/>
+            <circle cx="430" cy="92" r="58" fill="${main}" opacity=".18" stroke="${main}" stroke-width="6"/>
+            <circle cx="520" cy="86" r="28" fill="#fff" stroke="${accent}" stroke-width="5"/>
+            <path d="M466 126l66 54" stroke="${accent}" stroke-width="16" stroke-linecap="round"/>
+            <text x="318" y="76" fill="${accent}" font-size="28">桌球日記</text>`
+        };
+        els.levelVisual.innerHTML = `
+          <svg viewBox="0 0 640 178" role="img" aria-label="${level.title}插圖">
+            <defs>
+              <linearGradient id="visualBg-${level.id}" x1="0" x2="1" y1="0" y2="1">
+                <stop stop-color="#eef8f7"/>
+                <stop offset="1" stop-color="#fff4d8"/>
+              </linearGradient>
+            </defs>
+            <rect width="640" height="178" fill="url(#visualBg-${level.id})"/>
+            <circle cx="604" cy="28" r="80" fill="${accent}" opacity=".18"/>
+            <circle cx="56" cy="164" r="86" fill="${main}" opacity=".12"/>
+            ${scenes[level.id]}
+          </svg>`;
       }
 
       function renderQuiz(level) {
